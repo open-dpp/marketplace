@@ -7,8 +7,6 @@ import {
 import { Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AuthContext } from '../auth-request';
-import { User } from '../../users/domain/user';
-import { UsersService } from '../../users/infrastructure/users.service';
 import { KeycloakUserInToken } from './KeycloakUserInToken';
 import { IS_PUBLIC } from '../public/public.decorator';
 import { JwtService } from '@nestjs/jwt';
@@ -21,7 +19,6 @@ export class KeycloakAuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private configService: ConfigService,
-    private readonly usersService: UsersService,
     private jwtService: JwtService,
     private readonly httpService: HttpService,
   ) {}
@@ -65,10 +62,7 @@ export class KeycloakAuthGuard implements CanActivate {
         'Invalid token. Check if it is maybe expired.',
       );
     }
-    const user: KeycloakUserInToken = payload;
-    authContext.keycloakUser = user;
-    await this.usersService.create(user, true);
-    authContext.user = new User(payload.sub, user.email);
+    authContext.keycloakUser = payload;
     const memberships = payload.memberships || ([] as string[]);
     memberships.forEach((membership: string) => {
       authContext.permissions.push({

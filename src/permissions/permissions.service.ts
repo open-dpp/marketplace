@@ -1,5 +1,4 @@
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
-import { KeycloakResourcesService } from '../keycloak-resources/infrastructure/keycloak-resources.service';
 import { AuthContext } from '../auth/auth-request';
 import { ResourcePermission } from './resource-permission.interface';
 
@@ -7,7 +6,7 @@ import { ResourcePermission } from './resource-permission.interface';
 export class PermissionsService {
   private readonly logger = new Logger(PermissionsService.name);
 
-  constructor(private keycloakResourcesService: KeycloakResourcesService) {}
+  constructor() {}
 
   /**
    * Check if user can access organization

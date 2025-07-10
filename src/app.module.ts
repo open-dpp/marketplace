@@ -1,9 +1,9 @@
-import {Module} from '@nestjs/common';
-import {ConfigModule, ConfigService} from '@nestjs/config';
-import {APP_GUARD} from '@nestjs/core';
-import {KeycloakAuthGuard} from './auth/keycloak-auth/keycloak-auth.guard';
-import {generateMongoConfig} from './database/config';
-import {MongooseModule} from '@nestjs/mongoose';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { KeycloakAuthGuard } from './auth/keycloak-auth/keycloak-auth.guard';
+import { generateMongoConfig } from './database/config';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [

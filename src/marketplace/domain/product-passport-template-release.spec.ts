@@ -1,5 +1,3 @@
-import {ProductPassportTemplateRelease} from './product-passport-template-release';
-
 describe('ProductPassportTemplateRelease', () => {
   it('is created', () => {
     // TODO: implement passport

@@ -4,7 +4,7 @@ The open source plattform for digital product passports
 
 # Description
 
-This repository contains the REST API for the open-dpp plattform.
+This repository contains the marketplace for the open-dpp plattform.
 
 # Local development
 
@@ -50,5 +50,5 @@ If you want to join us contact us at [info@open-dpp.de](mailto:info@open-dpp.de?
 
 ## License
 
-The license of the REST API of open-dpp is [GNU GENERAL PUBLIC LICENSE](LICENSE).
+The license of the open-dpp cloud marketplace is [GNU GENERAL PUBLIC LICENSE](LICENSE).
 
