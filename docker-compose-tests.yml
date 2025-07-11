@@ -1,8 +1,8 @@
 services:
   market-place-db:
     ports:
-      - '27018:27017'
-    container_name: market-place-db
+      - '27017:27017'
+    container_name: marketplace-db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
