@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakAuthGuard } from './keycloak-auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../../users/infrastructure/users.service';
 import {
   ExecutionContext,
   HttpException,
@@ -12,14 +11,13 @@ import {
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC } from '../public/public.decorator';
 import { KeycloakUserInToken } from './KeycloakUserInToken';
-import { User } from '../../users/domain/user';
 import { HttpModule } from '@nestjs/axios';
 
 describe('KeycloakAuthGuard', () => {
   let guard: KeycloakAuthGuard;
   let reflector: Reflector;
-  let usersService: UsersService;
   let jwtService: JwtService;
+  let module: TestingModule;
 
   const mockUser: KeycloakUserInToken = {
     sub: 'test-user-id',
@@ -30,7 +28,7 @@ describe('KeycloakAuthGuard', () => {
   };
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [HttpModule],
       providers: [
         KeycloakAuthGuard,
@@ -47,14 +45,6 @@ describe('KeycloakAuthGuard', () => {
           },
         },
         {
-          provide: UsersService,
-          useValue: {
-            create: jest
-              .fn()
-              .mockResolvedValue(new User('test-user-id', 'user@example.com')),
-          },
-        },
-        {
           provide: JwtService,
           useValue: {
             verifyAsync: jest.fn(),
@@ -65,7 +55,6 @@ describe('KeycloakAuthGuard', () => {
 
     guard = module.get<KeycloakAuthGuard>(KeycloakAuthGuard);
     reflector = module.get<Reflector>(Reflector);
-    usersService = module.get<UsersService>(UsersService);
     jwtService = module.get<JwtService>(JwtService);
   });
 
@@ -136,11 +125,7 @@ describe('KeycloakAuthGuard', () => {
         publicKey:
           '-----BEGIN PUBLIC KEY-----\nmock-public-key\n-----END PUBLIC KEY-----',
       });
-      expect(usersService.create).toHaveBeenCalledWith(mockPayload, true);
       expect(mockRequest.authContext).toBeDefined();
-      expect(mockRequest.authContext.user).toEqual(
-        new User('test-user-id', 'user@example.com'),
-      );
       expect(mockRequest.authContext.keycloakUser).toEqual(mockPayload);
       expect(mockRequest.authContext.permissions).toEqual([
         {
@@ -172,5 +157,9 @@ describe('KeycloakAuthGuard', () => {
       expect(result).toBe(true);
       expect(mockRequest.authContext.permissions).toEqual([]);
     });
+  });
+
+  afterEach(async () => {
+    await module.close();
   });
 });

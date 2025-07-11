@@ -1,16 +1,12 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { AuthContext } from '../src/auth/auth-request';
-import { User } from '../src/users/domain/user';
-import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC } from '../src/auth/public/public.decorator';
+import {CanActivate, ExecutionContext, UnauthorizedException,} from '@nestjs/common';
+import {AuthContext} from '../src/auth/auth-request';
+import {Reflector} from '@nestjs/core';
+import {IS_PUBLIC} from '../src/auth/public/public.decorator';
+import {KeycloakUserInToken} from "../src/auth/keycloak-auth/KeycloakUserInToken";
 
 export class KeycloakAuthTestingGuard implements CanActivate {
   constructor(
-    public tokenToUserMap: Map<string, User>,
+    public tokenToUserMap: Map<string, KeycloakUserInToken>,
     private reflector?: Reflector,
   ) {}
 
@@ -47,7 +43,7 @@ export class KeycloakAuthTestingGuard implements CanActivate {
 
     if (this.tokenToUserMap.has(accessToken)) {
       const authContext = new AuthContext();
-      authContext.user = this.tokenToUserMap.get(accessToken);
+      authContext.keycloakUser = this.tokenToUserMap.get(accessToken);
       authContext.permissions = permissions.map((permission) => {
         return {
           type: 'organization',
@@ -60,7 +56,5 @@ export class KeycloakAuthTestingGuard implements CanActivate {
     } else {
       return false;
     }
-
-    // const authContext: AuthContext = await this.keycloakAuthService.getAuthContextFromKeycloakUser(req.user, isPublic);
   }
 }

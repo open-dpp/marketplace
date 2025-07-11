@@ -1,38 +1,33 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PermissionsService } from './permissions.service';
-import { KeycloakResourcesService } from '../keycloak-resources/infrastructure/keycloak-resources.service';
 import { AuthContext } from '../auth/auth-request';
-import { User } from '../users/domain/user';
 import { ForbiddenException, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 
 describe('PermissionsService', () => {
   let service: PermissionsService;
-  let mockKeycloakResourcesService: Partial<KeycloakResourcesService>;
   let authContext: AuthContext;
   let userId: string;
   let organizationId: string;
+  let module: TestingModule;
 
   beforeEach(async () => {
     // Mock dependencies
-    mockKeycloakResourcesService = {
-      // Add any methods used by PermissionsService here
-    };
 
     // Create test AuthContext with user and permissions
     userId = randomUUID();
     organizationId = randomUUID();
     authContext = new AuthContext();
-    authContext.user = new User(userId, 'test@example.com');
+    authContext.keycloakUser = {
+      sub: userId,
+      email: 'test@example.com',
+      name: 'Test User',
+      preferred_username: 'testuser',
+      email_verified: true,
+    };
 
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        PermissionsService,
-        {
-          provide: KeycloakResourcesService,
-          useValue: mockKeycloakResourcesService,
-        },
-      ],
+    module = await Test.createTestingModule({
+      providers: [PermissionsService],
     }).compile();
 
     // Silence logger during tests
@@ -254,5 +249,8 @@ describe('PermissionsService', () => {
       ]);
       expect(result).toBe(false);
     });
+  });
+  afterEach(async () => {
+    await module.close();
   });
 });

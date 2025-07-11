@@ -4,6 +4,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { KeycloakAuthGuard } from './auth/keycloak-auth/keycloak-auth.guard';
 import { generateMongoConfig } from './database/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import {HttpModule} from "@nestjs/axios";
+import {AuthModule} from "./auth/auth.module";
+import {PermissionsModule} from "./permissions/permissions.module";
 
 @Module({
   imports: [
@@ -17,6 +20,9 @@ import { MongooseModule } from '@nestjs/mongoose';
       }),
       inject: [ConfigService],
     }),
+    HttpModule,
+    AuthModule,
+    PermissionsModule,
   ],
   providers: [
     {

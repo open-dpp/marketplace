@@ -5,7 +5,7 @@ export enum Sector {
 
 type JsonObject = Record<string, any>;
 
-export class ProductPassportTemplateRelease {
+export class PassportTemplate {
   private constructor(
     public readonly id: string,
     public readonly version: string,

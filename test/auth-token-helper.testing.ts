@@ -1,6 +1,6 @@
-import { KeycloakAuthTestingGuard } from './keycloak-auth.guard.testing';
-import { randomUUID } from 'crypto';
-import { User } from '../src/users/domain/user';
+import {KeycloakAuthTestingGuard} from './keycloak-auth.guard.testing';
+import {randomUUID} from 'crypto';
+import {KeycloakUserInToken} from "../src/auth/keycloak-auth/KeycloakUserInToken";
 
 const getKeycloakAuthToken = (
   userId: string,
@@ -9,9 +9,18 @@ const getKeycloakAuthToken = (
 ) => {
   const organizationsString = `[${organizationIds.map((id) => id).join(',')}]`;
   const token = Buffer.from(organizationsString).toString('base64');
+  const name = randomUUID();
+  const email = `${name}@example.com`;
+  const keycloakUser: KeycloakUserInToken = {
+    sub: userId,
+    email,
+    name: `Test User ${name}`,
+    preferred_username: `Test User ${name}`,
+    email_verified: true,
+  }
   keycloakAuthTestingGuard.tokenToUserMap.set(
     token,
-    new User(userId, `${randomUUID()}@example.com`),
+    keycloakUser
   );
   return `Bearer ${token}`;
 };
