@@ -1,0 +1,59 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { PassportTemplateService } from './passport-template.service';
+import { Connection } from 'mongoose';
+import { MongooseTestingModule } from '../../../test/mongo.testing.module';
+import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
+import {
+  PassportTemplateDoc,
+  PassportTemplateSchema,
+} from './passport-template.schema';
+import { PassportTemplate } from '../domain/passport-template';
+import { passportTemplatePropsFactory } from '../fixtures/passport-template-props.factory';
+
+describe('PassportTemplateService', () => {
+  let service: PassportTemplateService;
+  let mongoConnection: Connection;
+  let module: TestingModule;
+
+  const mockNow = new Date('2025-01-01T12:00:00Z').getTime();
+
+  beforeEach(() => {
+    jest.spyOn(Date, 'now').mockImplementation(() => mockNow);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  beforeAll(async () => {
+    module = await Test.createTestingModule({
+      imports: [
+        MongooseTestingModule,
+        MongooseModule.forFeature([
+          {
+            name: PassportTemplateDoc.name,
+            schema: PassportTemplateSchema,
+          },
+        ]),
+      ],
+      providers: [PassportTemplateService],
+    }).compile();
+    service = module.get<PassportTemplateService>(PassportTemplateService);
+    mongoConnection = module.get<Connection>(getConnectionToken());
+  });
+
+  it('should create passport template', async () => {
+    const passportTemplate = PassportTemplate.loadFromDb(
+      passportTemplatePropsFactory.build(),
+    );
+
+    const { id } = await service.save(passportTemplate);
+    const found = await service.findOneOrFail(id);
+    expect(found).toEqual(passportTemplate);
+  });
+
+  afterAll(async () => {
+    await mongoConnection.close();
+    await module.close();
+  });
+});
