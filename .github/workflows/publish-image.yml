@@ -9,7 +9,7 @@ on:
     tags: [ 'v*.*.*' ]
 
 env:
-  NODE_VERSION: 23
+  NODE_VERSION: 24
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository is <owner>/<repo>
