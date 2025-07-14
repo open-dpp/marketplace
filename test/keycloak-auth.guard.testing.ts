@@ -1,8 +1,12 @@
-import {CanActivate, ExecutionContext, UnauthorizedException,} from '@nestjs/common';
-import {AuthContext} from '../src/auth/auth-request';
-import {Reflector} from '@nestjs/core';
-import {IS_PUBLIC} from '../src/auth/public/public.decorator';
-import {KeycloakUserInToken} from "../src/auth/keycloak-auth/KeycloakUserInToken";
+import {
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { AuthContext } from '../src/auth/auth-request';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC } from '../src/auth/public/public.decorator';
+import { KeycloakUserInToken } from '../src/auth/keycloak-auth/KeycloakUserInToken';
 
 export class KeycloakAuthTestingGuard implements CanActivate {
   constructor(
