@@ -71,15 +71,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Wait for Postgres to be ready
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          echo "Waiting for PostgreSQL to start..."
-          until pg_isready -h localhost -p 20003 -U open-dpp; do
-            sleep 1
-          done
-
-      # Step 5: Run tests
+      # Step 4: Run tests
       - name: Run tests
         env:
           DB_USERNAME: admin
