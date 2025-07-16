@@ -2,14 +2,11 @@ import { INestApplication } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseTestingModule } from '../../../test/mongo.testing.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, Reflector } from '@nestjs/core';
 import * as request from 'supertest';
 import { PassportTemplateModule } from '../passport-template.module';
 import { Connection } from 'mongoose';
 import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
-import { VerifiableCredentialsGuard } from '../../auth/verifiable-credentials/verifiable-credentials.guard';
-import { getVcTokenFromConfigService } from '../../../test/auth-token-helper.testing';
-import { ConfigService } from '@nestjs/config';
 import {
   passportRequestFactory,
   passportTemplatePropsFactory,
@@ -21,18 +18,28 @@ import {
 } from '../infrastructure/passport-template.schema';
 import { PassportTemplate } from '../domain/passport-template';
 import { passportTemplateToDto } from './dto/passport-template.dto';
+import getKeycloakAuthToken from '../../../test/auth-token-helper.testing';
+import { KeycloakAuthTestingGuard } from '../../../test/keycloak-auth.guard.testing';
 
 describe('PassportTemplateController', () => {
   let app: INestApplication;
+  const reflector: Reflector = new Reflector();
+  const keycloakAuthTestingGuard = new KeycloakAuthTestingGuard(
+    new Map(),
+    reflector,
+  );
+
   let mongoConnection: Connection;
   let module: TestingModule;
-  let configService: ConfigService;
   let passportTemplateService: PassportTemplateService;
+  const userId = randomUUID();
+  const organizationId = randomUUID();
 
   const mockNow = new Date('2025-01-01T12:00:00Z');
 
   beforeEach(() => {
     jest.spyOn(Date, 'now').mockImplementation(() => mockNow.getTime());
+    jest.spyOn(reflector, 'get').mockReturnValue(false);
   });
 
   afterEach(() => {
@@ -54,26 +61,30 @@ describe('PassportTemplateController', () => {
       providers: [
         {
           provide: APP_GUARD,
-          useClass: VerifiableCredentialsGuard, // Changed from useValue to useClass
+          useValue: keycloakAuthTestingGuard,
         },
       ],
     }).compile();
 
     app = module.createNestApplication();
     mongoConnection = module.get(getConnectionToken());
-    configService = module.get(ConfigService);
     passportTemplateService = module.get(PassportTemplateService);
 
     await app.init();
   });
 
   it(`/POST passport template`, async () => {
-    const did = randomUUID();
     const passportTemplate = passportRequestFactory.build();
-    const vcToken = await getVcTokenFromConfigService(did, configService);
     const response = await request(app.getHttpServer())
-      .post(`/templates/passports`)
-      .set('Authorization', vcToken)
+      .post(`/organizations/${organizationId}/templates/passports`)
+      .set(
+        'Authorization',
+        getKeycloakAuthToken(
+          userId,
+          [organizationId],
+          keycloakAuthTestingGuard,
+        ),
+      )
       .send(passportTemplate);
     expect(response.status).toEqual(201);
     const found = await passportTemplateService.findOneOrFail(response.body.id);
@@ -81,7 +92,8 @@ describe('PassportTemplateController', () => {
     expect(found).toEqual(
       PassportTemplate.loadFromDb({
         ...passportTemplate,
-        vcDid: did,
+        ownedByOrganizationId: organizationId,
+        createdByUserId: userId,
         isOfficial: false,
         createdAt: mockNow,
         updatedAt: mockNow,
@@ -90,7 +102,25 @@ describe('PassportTemplateController', () => {
     );
   });
 
+  it(`/POST passport template fails if user is not member of organization`, async () => {
+    const passportTemplate = passportRequestFactory.build();
+    const otherOrganizationId = randomUUID();
+    const response = await request(app.getHttpServer())
+      .post(`/organizations/${organizationId}/templates/passports`)
+      .set(
+        'Authorization',
+        getKeycloakAuthToken(
+          userId,
+          [otherOrganizationId],
+          keycloakAuthTestingGuard,
+        ),
+      )
+      .send(passportTemplate);
+    expect(response.status).toEqual(403);
+  });
+
   it(`/GET find passport template`, async () => {
+    jest.spyOn(reflector, 'get').mockReturnValue(true);
     const passportTemplate = PassportTemplate.loadFromDb(
       passportTemplatePropsFactory.build(),
     );
@@ -103,6 +133,7 @@ describe('PassportTemplateController', () => {
   });
 
   it(`/GET find all passport templates`, async () => {
+    jest.spyOn(reflector, 'get').mockReturnValue(true);
     const passportTemplate = PassportTemplate.loadFromDb(
       passportTemplatePropsFactory.build(),
     );

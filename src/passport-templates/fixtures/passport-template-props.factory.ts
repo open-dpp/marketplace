@@ -31,6 +31,8 @@ export const passportRequestFactory = Factory.define<PassportTemplateCreateDto>(
 export const passportTemplatePropsFactory =
   Factory.define<PassportTemplateProps>(() => ({
     id: randomUUID(),
+    ownedByOrganizationId: randomUUID(),
+    createdByUserId: randomUUID(),
     name: 'test',
     description: 'test description',
     version: '1.0.0',

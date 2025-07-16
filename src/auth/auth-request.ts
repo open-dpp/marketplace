@@ -1,11 +1,10 @@
+import { KeycloakUserInToken } from './keycloak-auth/KeycloakUserInToken';
 import { Request } from 'express';
-
-export interface IVerifiableCredential {
-  sub: string;
-}
+import { ResourcePermission } from '../permissions/resource-permission.interface';
 
 export class AuthContext {
-  verifiableCredential: IVerifiableCredential;
+  permissions: Array<ResourcePermission>;
+  keycloakUser: KeycloakUserInToken;
 }
 
 export interface AuthRequest extends Request {

@@ -6,6 +6,7 @@ import {
   PassportTemplateDoc,
   PassportTemplateDbSchema,
 } from './infrastructure/passport-template.schema';
+import { PermissionsModule } from '../permissions/permissions.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import {
         schema: PassportTemplateDbSchema,
       },
     ]),
+    PermissionsModule,
   ],
   controllers: [PassportTemplateController],
   providers: [PassportTemplateService],

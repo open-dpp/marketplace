@@ -8,29 +8,41 @@ import {
 } from './dto/passport-template.dto';
 import { PassportTemplate } from '../domain/passport-template';
 import { Public } from '../../auth/public/public.decorator';
+import { PermissionsService } from '../../permissions/permissions.service';
 
-@Controller('templates/passports')
+const templatesEndpoint = 'templates/passports';
+
+@Controller()
 export class PassportTemplateController {
-  constructor(private passportTemplateService: PassportTemplateService) {}
+  constructor(
+    private passportTemplateService: PassportTemplateService,
+    private permissionsService: PermissionsService,
+  ) {}
 
-  @Post()
+  @Post('organizations/:organizationId/templates/passports')
   async createTemplate(
+    @Param('organizationId') organizationId: string,
     @Request() req: AuthRequest,
     @Body() body: PassportTemplateCreateDto,
   ) {
+    await this.permissionsService.canAccessOrganizationOrFail(
+      organizationId,
+      req.authContext,
+    );
     const passportTemplateDto = PassportTemplateCreateSchema.parse(body);
     const passportTemplate = await this.passportTemplateService.save(
       PassportTemplate.create({
         ...passportTemplateDto,
         isOfficial: false,
-        vcDid: req.authContext.verifiableCredential.sub,
+        ownedByOrganizationId: organizationId,
+        createdByUserId: req.authContext.keycloakUser.sub,
       }),
     );
     return passportTemplateToDto(passportTemplate);
   }
 
   @Public()
-  @Get(':id')
+  @Get(`${templatesEndpoint}/:id`)
   async findTemplate(@Param('id') id: string) {
     return passportTemplateToDto(
       await this.passportTemplateService.findOneOrFail(id),
@@ -38,8 +50,8 @@ export class PassportTemplateController {
   }
 
   @Public()
-  @Get()
-  async getTemplates(@Param('id') id: string) {
+  @Get(templatesEndpoint)
+  async getTemplates() {
     const passportTemplates = await this.passportTemplateService.findAll();
     return passportTemplates.map((pt) => passportTemplateToDto(pt));
   }

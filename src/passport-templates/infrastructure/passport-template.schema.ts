@@ -33,9 +33,9 @@ export class PassportTemplateDoc extends Document {
   @Prop({ required: true })
   organizationName: string;
   @Prop({ required: true })
-  vcDid: string;
-  @Prop({ required: true })
   ownedByOrganizationId: string;
+  @Prop({ required: true })
+  createdByUserId: string;
   @Prop({ required: true, type: MongooseSchema.Types.Mixed })
   templateData: Record<string, unknown>;
   @Prop({ required: true })

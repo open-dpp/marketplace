@@ -17,8 +17,9 @@ export type PassportTemplateCreateDto = z.infer<
 >;
 
 export const PassportTemplateSchema = PassportTemplateCreateSchema.extend({
-  id: z.string(),
-  vcDid: z.string(),
+  id: z.uuid(),
+  ownedByOrganizationId: z.uuid(),
+  createdByUserId: z.uuid(),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
 });
@@ -30,7 +31,8 @@ export function passportTemplateToDto(
 ): PassportTemplateDto {
   return PassportTemplateSchema.parse({
     id: passportTemplate.id,
-    vcDid: passportTemplate.vcDid,
+    ownedByOrganizationId: passportTemplate.ownedByOrganizationId,
+    createdByUserId: passportTemplate.createdByUserId,
     version: passportTemplate.version,
     name: passportTemplate.name,
     description: passportTemplate.description,

@@ -16,7 +16,10 @@ describe('PassportTemplate', () => {
     expect(passportTemplate.contactEmail).toEqual('test@example.com');
     expect(passportTemplate.organizationName).toEqual('open-dpp');
     expect(passportTemplate.templateData).toEqual(props.templateData);
-    expect(passportTemplate.vcDid).toEqual(props.vcDid);
+    expect(passportTemplate.ownedByOrganizationId).toEqual(
+      props.ownedByOrganizationId,
+    );
+    expect(passportTemplate.createdByUserId).toEqual(props.createdByUserId);
   });
   it('is loaded from database', () => {
     const props = passportTemplatePropsFactory.build();
@@ -32,6 +35,9 @@ describe('PassportTemplate', () => {
     expect(passportTemplate.contactEmail).toEqual('test@example.com');
     expect(passportTemplate.organizationName).toEqual('open-dpp');
     expect(passportTemplate.templateData).toEqual(props.templateData);
-    expect(passportTemplate.vcDid).toEqual(props.vcDid);
+    expect(passportTemplate.ownedByOrganizationId).toEqual(
+      props.ownedByOrganizationId,
+    );
+    expect(passportTemplate.createdByUserId).toEqual(props.createdByUserId);
   });
 });

@@ -8,6 +8,8 @@ export enum Sector {
 type JsonObject = Record<string, unknown>;
 
 type PassportTemplateCreationProps = {
+  ownedByOrganizationId: string;
+  createdByUserId: string;
   version: string;
   name: string;
   description: string;
@@ -17,7 +19,6 @@ type PassportTemplateCreationProps = {
   contactEmail: string;
   organizationName: string;
   templateData: JsonObject;
-  vcDid: string;
 };
 export type PassportTemplateProps = PassportTemplateCreationProps & {
   id: string;
@@ -28,7 +29,8 @@ export type PassportTemplateProps = PassportTemplateCreationProps & {
 export class PassportTemplate {
   private constructor(
     public readonly id: string,
-    public readonly vcDid: string,
+    public readonly ownedByOrganizationId: string,
+    public readonly createdByUserId: string,
     public readonly version: string,
     public readonly name: string,
     public readonly description: string,
@@ -45,7 +47,8 @@ export class PassportTemplate {
   static create(data: PassportTemplateCreationProps): PassportTemplate {
     return new PassportTemplate(
       randomUUID(),
-      data.vcDid,
+      data.ownedByOrganizationId,
+      data.createdByUserId,
       data.version,
       data.name,
       data.description,
@@ -62,7 +65,8 @@ export class PassportTemplate {
   static loadFromDb(data: PassportTemplateProps): PassportTemplate {
     return new PassportTemplate(
       data.id,
-      data.vcDid,
+      data.ownedByOrganizationId,
+      data.createdByUserId,
       data.version,
       data.name,
       data.description,
