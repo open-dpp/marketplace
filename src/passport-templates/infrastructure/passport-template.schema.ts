@@ -33,6 +33,8 @@ export class PassportTemplateDoc extends Document {
   @Prop({ required: true })
   organizationName: string;
   @Prop({ required: true })
+  vcDid: string;
+  @Prop({ required: true })
   ownedByOrganizationId: string;
   @Prop({ required: true, type: MongooseSchema.Types.Mixed })
   templateData: Record<string, unknown>;
@@ -41,7 +43,7 @@ export class PassportTemplateDoc extends Document {
   @Prop({ required: true })
   updatedAt: Date;
 }
-export const PassportTemplateSchema =
+export const PassportTemplateDbSchema =
   SchemaFactory.createForClass(PassportTemplateDoc);
 
-PassportTemplateSchema.index({ organizationName: 1, sectors: 1 });
+PassportTemplateDbSchema.index({ organizationName: 1, sectors: 1 });

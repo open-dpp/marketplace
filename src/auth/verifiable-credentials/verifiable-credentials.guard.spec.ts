@@ -36,7 +36,7 @@ describe('VerifiableCredentialGuard', () => {
   });
 
   it(`should throw unauthorized exception when authorization header is missing`, async () => {
-    const response = await request(app.getHttpServer()).get(
+    const response = await request(app.getHttpServer()).post(
       `/templates/passports`,
     );
     expect(response.status).toEqual(401);
@@ -45,7 +45,7 @@ describe('VerifiableCredentialGuard', () => {
 
   it('should throw unauthorized exception when authorization format is invalid', async () => {
     const response = await request(app.getHttpServer())
-      .get(`/templates/passports`)
+      .post(`/templates/passports`)
       .set('Authorization', 'InvalidFormat');
     expect(response.status).toEqual(401);
     expect(response.body.message).toEqual(
@@ -61,7 +61,7 @@ describe('VerifiableCredentialGuard', () => {
       '618e9391279793c414f2666836fe65173260f1c903bde1f39d5ed40a0935ad25b7ca9080ec7a640d9fba19316ece5cc2ece514bdf81b124204e5986e4a6dc784',
     );
     const response = await request(app.getHttpServer())
-      .get(`/templates/passports`)
+      .post(`/templates/passports`)
       .set('Authorization', vcToken);
     expect(response.status).toEqual(401);
     expect(response.body.message).toEqual('Authorization: Invalid issuer.');
@@ -75,7 +75,7 @@ describe('VerifiableCredentialGuard', () => {
       configService.get('ISSUER_PRIVATE_KEY_HEX'),
     );
     const response = await request(app.getHttpServer())
-      .get(`/templates/passports`)
+      .post(`/templates/passports`)
       .set('Authorization', vcToken);
     expect(response.status).toEqual(401);
     expect(response.body.message).toEqual(

@@ -1,8 +1,8 @@
 import { randomUUID } from 'crypto';
 
 export enum Sector {
-  BATTERY = 'battery',
-  TEXTILE = 'textile',
+  BATTERY = 'Battery',
+  TEXTILE = 'Textile',
 }
 
 type JsonObject = Record<string, unknown>;
@@ -16,8 +16,8 @@ type PassportTemplateCreationProps = {
   website: string | null;
   contactEmail: string;
   organizationName: string;
-  ownedByOrganizationId: string;
   templateData: JsonObject;
+  vcDid: string;
 };
 export type PassportTemplateProps = PassportTemplateCreationProps & {
   id: string;
@@ -28,6 +28,7 @@ export type PassportTemplateProps = PassportTemplateCreationProps & {
 export class PassportTemplate {
   private constructor(
     public readonly id: string,
+    public readonly vcDid: string,
     public readonly version: string,
     public readonly name: string,
     public readonly description: string,
@@ -36,7 +37,6 @@ export class PassportTemplate {
     public readonly website: string | null,
     public readonly contactEmail: string,
     public readonly organizationName: string,
-    public readonly ownedByOrganizationId: string,
     public readonly templateData: JsonObject,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
@@ -45,6 +45,7 @@ export class PassportTemplate {
   static create(data: PassportTemplateCreationProps): PassportTemplate {
     return new PassportTemplate(
       randomUUID(),
+      data.vcDid,
       data.version,
       data.name,
       data.description,
@@ -53,7 +54,6 @@ export class PassportTemplate {
       data.website,
       data.contactEmail,
       data.organizationName,
-      data.ownedByOrganizationId,
       data.templateData,
       new Date(Date.now()),
     );
@@ -62,6 +62,7 @@ export class PassportTemplate {
   static loadFromDb(data: PassportTemplateProps): PassportTemplate {
     return new PassportTemplate(
       data.id,
+      data.vcDid,
       data.version,
       data.name,
       data.description,
@@ -70,7 +71,6 @@ export class PassportTemplate {
       data.website,
       data.contactEmail,
       data.organizationName,
-      data.ownedByOrganizationId,
       data.templateData,
       data.createdAt,
       data.updatedAt,

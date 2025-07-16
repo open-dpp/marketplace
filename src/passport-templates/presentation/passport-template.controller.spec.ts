@@ -6,20 +6,47 @@ import { APP_GUARD } from '@nestjs/core';
 import * as request from 'supertest';
 import { PassportTemplateModule } from '../passport-template.module';
 import { Connection } from 'mongoose';
-import { getConnectionToken } from '@nestjs/mongoose';
+import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import { VerifiableCredentialsGuard } from '../../auth/verifiable-credentials/verifiable-credentials.guard';
 import { getVcTokenFromConfigService } from '../../../test/auth-token-helper.testing';
 import { ConfigService } from '@nestjs/config';
+import { passportRequestFactory } from '../fixtures/passport-template-props.factory';
+import { PassportTemplateService } from '../infrastructure/passport-template.service';
+import {
+  PassportTemplateDoc,
+  PassportTemplateDbSchema,
+} from '../infrastructure/passport-template.schema';
+import { PassportTemplate } from '../domain/passport-template';
 
 describe('PassportTemplateController', () => {
   let app: INestApplication;
   let mongoConnection: Connection;
   let module: TestingModule;
   let configService: ConfigService;
+  let passportTemplateService: PassportTemplateService;
+
+  const mockNow = new Date('2025-01-01T12:00:00Z');
+
+  beforeEach(() => {
+    jest.spyOn(Date, 'now').mockImplementation(() => mockNow.getTime());
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [MongooseTestingModule, PassportTemplateModule],
+      imports: [
+        MongooseTestingModule,
+        MongooseModule.forFeature([
+          {
+            name: PassportTemplateDoc.name,
+            schema: PassportTemplateDbSchema,
+          },
+        ]),
+        PassportTemplateModule,
+      ],
       providers: [
         {
           provide: APP_GUARD,
@@ -31,18 +58,32 @@ describe('PassportTemplateController', () => {
     app = module.createNestApplication();
     mongoConnection = module.get(getConnectionToken());
     configService = module.get(ConfigService);
+    passportTemplateService = module.get(PassportTemplateService);
 
     await app.init();
   });
 
-  it(`/GET passport template`, async () => {
+  it(`/POST passport template`, async () => {
     const did = randomUUID();
+    const passportTemplate = passportRequestFactory.build();
     const vcToken = await getVcTokenFromConfigService(did, configService);
     const response = await request(app.getHttpServer())
-      .get(`/templates/passports`)
-      .set('Authorization', vcToken);
-    expect(response.status).toEqual(200);
-    expect(response.body).toEqual({ hello: did });
+      .post(`/templates/passports`)
+      .set('Authorization', vcToken)
+      .send(passportTemplate);
+    expect(response.status).toEqual(201);
+    const found = await passportTemplateService.findOneOrFail(response.body.id);
+
+    expect(found).toEqual(
+      PassportTemplate.loadFromDb({
+        ...passportTemplate,
+        vcDid: did,
+        isOfficial: false,
+        createdAt: mockNow,
+        updatedAt: mockNow,
+        id: response.body.id,
+      }),
+    );
   });
 
   afterAll(async () => {

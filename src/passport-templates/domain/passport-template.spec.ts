@@ -12,13 +12,11 @@ describe('PassportTemplate', () => {
     expect(passportTemplate.description).toEqual('test description');
     expect(passportTemplate.isOfficial).toEqual(true);
     expect(passportTemplate.sectors).toEqual([Sector.BATTERY]);
-    expect(passportTemplate.ownedByOrganizationId).toEqual(
-      props.ownedByOrganizationId,
-    );
     expect(passportTemplate.website).toEqual('https://open-dpp.de');
     expect(passportTemplate.contactEmail).toEqual('test@example.com');
     expect(passportTemplate.organizationName).toEqual('open-dpp');
     expect(passportTemplate.templateData).toEqual(props.templateData);
+    expect(passportTemplate.vcDid).toEqual(props.vcDid);
   });
   it('is loaded from database', () => {
     const props = passportTemplatePropsFactory.build();
@@ -30,12 +28,10 @@ describe('PassportTemplate', () => {
     expect(passportTemplate.description).toEqual('test description');
     expect(passportTemplate.isOfficial).toEqual(true);
     expect(passportTemplate.sectors).toEqual([Sector.BATTERY]);
-    expect(passportTemplate.ownedByOrganizationId).toEqual(
-      props.ownedByOrganizationId,
-    );
     expect(passportTemplate.website).toEqual('https://open-dpp.de');
     expect(passportTemplate.contactEmail).toEqual('test@example.com');
     expect(passportTemplate.organizationName).toEqual('open-dpp');
     expect(passportTemplate.templateData).toEqual(props.templateData);
+    expect(passportTemplate.vcDid).toEqual(props.vcDid);
   });
 });

@@ -15,6 +15,7 @@ export class PassportTemplateService {
   convertToDomain(passportTemplateDoc: PassportTemplateDoc): PassportTemplate {
     return PassportTemplate.loadFromDb({
       id: passportTemplateDoc._id,
+      vcDid: passportTemplateDoc.vcDid,
       version: passportTemplateDoc.version,
       name: passportTemplateDoc.name,
       description: passportTemplateDoc.description,
@@ -23,7 +24,6 @@ export class PassportTemplateService {
       website: passportTemplateDoc.website,
       contactEmail: passportTemplateDoc.contactEmail,
       organizationName: passportTemplateDoc.organizationName,
-      ownedByOrganizationId: passportTemplateDoc.ownedByOrganizationId,
       templateData: passportTemplateDoc.templateData,
       createdAt: passportTemplateDoc.createdAt,
       updatedAt: passportTemplateDoc.updatedAt,
@@ -34,6 +34,7 @@ export class PassportTemplateService {
     const dataModelDoc = await this.passportTemplateDoc.findOneAndUpdate(
       { _id: passportTemplate.id },
       {
+        vcDid: passportTemplate.vcDid,
         version: passportTemplate.version,
         name: passportTemplate.name,
         description: passportTemplate.description,
@@ -42,7 +43,6 @@ export class PassportTemplateService {
         website: passportTemplate.website,
         contactEmail: passportTemplate.contactEmail,
         organizationName: passportTemplate.organizationName,
-        ownedByOrganizationId: passportTemplate.ownedByOrganizationId,
         templateData: passportTemplate.templateData,
         createdAt: passportTemplate.createdAt,
         updatedAt: new Date(Date.now()),

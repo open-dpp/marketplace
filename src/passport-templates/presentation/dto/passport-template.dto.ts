@@ -6,19 +6,19 @@ export const PassportTemplateCreateSchema = z.object({
   name: z.string(),
   description: z.string(),
   sectors: z.enum(Sector).array(),
-  website: z.string().nullable(),
+  website: z.string().optional().default(null),
   contactEmail: z.string(),
   organizationName: z.string(),
-  ownedByOrganizationId: z.string(),
   templateData: z.record(z.string(), z.unknown()),
 });
 
-export type PassportTemplateCreate = z.infer<
+export type PassportTemplateCreateDto = z.infer<
   typeof PassportTemplateCreateSchema
 >;
 
 export const PassportTemplateSchema = PassportTemplateCreateSchema.extend({
   id: z.string(),
+  vcDid: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -30,6 +30,7 @@ export function passportTemplateToDto(
 ): PassportTemplateDto {
   return PassportTemplateSchema.parse({
     id: passportTemplate.id,
+    vcDid: passportTemplate.vcDid,
     version: passportTemplate.version,
     name: passportTemplate.name,
     description: passportTemplate.description,
@@ -37,7 +38,6 @@ export function passportTemplateToDto(
     website: passportTemplate.website,
     contactEmail: passportTemplate.contactEmail,
     organizationName: passportTemplate.organizationName,
-    ownedByOrganizationId: passportTemplate.ownedByOrganizationId,
     templateData: passportTemplate.templateData,
     createdAt: passportTemplate.createdAt,
     updatedAt: passportTemplate.updatedAt,

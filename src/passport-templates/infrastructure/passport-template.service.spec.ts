@@ -5,7 +5,7 @@ import { MongooseTestingModule } from '../../../test/mongo.testing.module';
 import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import {
   PassportTemplateDoc,
-  PassportTemplateSchema,
+  PassportTemplateDbSchema,
 } from './passport-template.schema';
 import { PassportTemplate } from '../domain/passport-template';
 import { passportTemplatePropsFactory } from '../fixtures/passport-template-props.factory';
@@ -34,7 +34,7 @@ describe('PassportTemplateService', () => {
         MongooseModule.forFeature([
           {
             name: PassportTemplateDoc.name,
-            schema: PassportTemplateSchema,
+            schema: PassportTemplateDbSchema,
           },
         ]),
       ],
