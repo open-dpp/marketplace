@@ -2,7 +2,7 @@ import type { Config } from 'jest';
 import * as path from 'path';
 
 const config: Config = {
-  setupFiles: [path.join(__dirname, 'jest.setup.ts')],
+  setupFiles: [path.join(process.cwd(), 'jest.setup.ts')],
 
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: 'src',
