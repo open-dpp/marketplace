@@ -19,6 +19,7 @@ export type PassportTemplateCreateDto = z.infer<
 export const PassportTemplateSchema = PassportTemplateCreateSchema.extend({
   id: z.string(),
   vcDid: z.string(),
+  isOfficial: z.boolean(),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
 });
@@ -33,6 +34,7 @@ export function passportTemplateToDto(
     vcDid: passportTemplate.vcDid,
     version: passportTemplate.version,
     name: passportTemplate.name,
+    isOfficial: passportTemplate.isOfficial,
     description: passportTemplate.description,
     sectors: passportTemplate.sectors,
     website: passportTemplate.website,

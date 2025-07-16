@@ -8,6 +8,7 @@ import {
 } from './dto/passport-template.dto';
 import { PassportTemplate } from '../domain/passport-template';
 import { Public } from '../../auth/public/public.decorator';
+import { omitBy } from 'lodash';
 
 @Controller('templates/passports')
 export class PassportTemplateController {
@@ -41,6 +42,8 @@ export class PassportTemplateController {
   @Get()
   async getTemplates(@Param('id') id: string) {
     const passportTemplates = await this.passportTemplateService.findAll();
-    return passportTemplates.map((pt) => passportTemplateToDto(pt));
+    return passportTemplates.map((pt) =>
+      omitBy(passportTemplateToDto(pt), 'templateData'),
+    );
   }
 }

@@ -21,6 +21,7 @@ import {
 } from '../infrastructure/passport-template.schema';
 import { PassportTemplate } from '../domain/passport-template';
 import { passportTemplateToDto } from './dto/passport-template.dto';
+import { omitBy } from 'lodash';
 
 describe('PassportTemplateController', () => {
   let app: INestApplication;
@@ -117,10 +118,10 @@ describe('PassportTemplateController', () => {
     );
     expect(response.status).toEqual(200);
     expect(response.body).toContainEqual(
-      passportTemplateToDto(passportTemplate),
+      omitBy(passportTemplateToDto(passportTemplate), 'templateData'),
     );
     expect(response.body).toContainEqual(
-      passportTemplateToDto(passportTemplate2),
+      omitBy(passportTemplateToDto(passportTemplate2), 'templateData'),
     );
   });
 
