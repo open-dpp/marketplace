@@ -3,13 +3,12 @@ import { Body, Controller, ForbiddenException, Post } from '@nestjs/common';
 import { ChallengeService } from '../infrastructure/challenge-service';
 import { Public } from '../../auth/public/public.decorator';
 import { Challenge } from '../domain/challenge';
-import { verifyJWT } from 'did-jwt';
 import {
   challengeToDto,
   ChallengeVerifySchema,
 } from './dto/verifiable-credentials';
 import { ConfigService } from '@nestjs/config';
-import { createResolver, issueVc } from '../../auth/utils';
+import { issueVc, verifyOrFail } from '../../auth/utils';
 
 @Controller('verifiable-credentials')
 export class ChallengeController {
@@ -42,10 +41,10 @@ export class ChallengeController {
       throw new ForbiddenException('Invalid or expired challenge');
     }
 
-    const verified = await verifyJWT(signatureJwt, {
-      resolver: createResolver(),
-      audience: did,
-    });
+    const verified = await verifyOrFail(signatureJwt);
+    if (verified.issuer !== did) {
+      throw new ForbiddenException('Invalid issuer');
+    }
     const { vc } = verified.payload;
     if (vc.credentialSubject.challenge !== challenge) {
       throw new ForbiddenException('Challenge mismatch in payload');

@@ -13,6 +13,7 @@ import bs58 from 'bs58';
 import * as varint from 'varint';
 import { createVerifiableCredentialJwt, Issuer } from 'did-jwt-vc';
 import { EdDSASigner } from 'did-jwt';
+import { NotFoundInDatabaseExceptionFilter } from '../../exceptions/exception.handler';
 
 describe('PassportTemplateController', () => {
   let app: INestApplication;
@@ -31,6 +32,7 @@ describe('PassportTemplateController', () => {
     }).compile();
 
     app = module.createNestApplication();
+    app.useGlobalFilters(new NotFoundInDatabaseExceptionFilter());
     mongoConnection = module.get(getConnectionToken());
 
     await app.init();
@@ -112,11 +114,50 @@ describe('PassportTemplateController', () => {
   it(`/POST issue verifiable credential`, async () => {
     const { did, privateKey } = generateDid();
     const challenge = await callCreateChallenge(did);
-
     const signatureJwt = await createSignedJwt(did, privateKey, challenge);
     const response = await callIssueVc(did, challenge, signatureJwt);
     expect(response.status).toEqual(201);
     expect(response.body).toEqual({ jwt: expect.any(String) });
+  });
+
+  it(`/POST issue verifiable credential fails if private key does not fit to public key`, async () => {
+    const { did } = generateDid();
+    const challenge = await callCreateChallenge(did);
+    const { privateKey: otherPrivateKey } = generateDid();
+    const signatureJwt = await createSignedJwt(did, otherPrivateKey, challenge);
+    const response = await callIssueVc(did, challenge, signatureJwt);
+    expect(response.status).toEqual(401);
+    expect(response.body.message).toEqual(
+      'Authorization: Invalid verifiable credential.',
+    );
+  });
+
+  it(`/POST issue verifiable credential fails if no challenge exists for did`, async () => {
+    const { did } = generateDid();
+    const challenge = await callCreateChallenge(did);
+    const { did: otherDid, privateKey: otherPrivateKey } = generateDid();
+    const signatureJwt = await createSignedJwt(
+      otherDid,
+      otherPrivateKey,
+      challenge,
+    );
+    const response = await callIssueVc(otherDid, challenge, signatureJwt);
+    expect(response.status).toEqual(404);
+    expect(response.body.message).toEqual('Challenge could not be found.');
+  });
+
+  it(`/POST issue verifiable credential fails if did in payload differs from the one in the token`, async () => {
+    const { did } = generateDid();
+    const challenge = await callCreateChallenge(did);
+    const { did: otherDid, privateKey: otherPrivateKey } = generateDid();
+    const signatureJwt = await createSignedJwt(
+      otherDid,
+      otherPrivateKey,
+      challenge,
+    );
+    const response = await callIssueVc(did, challenge, signatureJwt);
+    expect(response.status).toEqual(403);
+    expect(response.body.message).toEqual('Invalid issuer');
   });
 
   it(`/POST issue verifiable credential fails for wrong challenge`, async () => {
