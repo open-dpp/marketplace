@@ -27,7 +27,7 @@ export class ChallengeController {
   @Post('challenge-request')
   async requestChallenge(@Body() body: { did: string }) {
     const challenge = Challenge.create({ id: body.did });
-    return challengeToDto(await this.challengeService.saveChallenge(challenge));
+    return challengeToDto(await this.challengeService.save(challenge));
   }
 
   @Public()

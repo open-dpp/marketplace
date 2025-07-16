@@ -9,6 +9,8 @@ import {
 } from './passport-template.schema';
 import { PassportTemplate } from '../domain/passport-template';
 import { passportTemplatePropsFactory } from '../fixtures/passport-template-props.factory';
+import { randomUUID } from 'crypto';
+import { NotFoundInDatabaseException } from '../../exceptions/service.exceptions';
 
 describe('PassportTemplateService', () => {
   let service: PassportTemplateService;
@@ -40,6 +42,12 @@ describe('PassportTemplateService', () => {
     }).compile();
     service = module.get<PassportTemplateService>(PassportTemplateService);
     mongoConnection = module.get<Connection>(getConnectionToken());
+  });
+
+  it('fails if requested passport template could not be found', async () => {
+    await expect(service.findOneOrFail(randomUUID())).rejects.toThrow(
+      new NotFoundInDatabaseException(PassportTemplate.name),
+    );
   });
 
   it('should create passport template', async () => {

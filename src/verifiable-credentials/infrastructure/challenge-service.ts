@@ -24,10 +24,10 @@ export class ChallengeService {
     if (!challengeDocument) {
       throw new NotFoundInDatabaseException(Challenge.name);
     }
-    return challengeDocument;
+    return this.convertToDomain(challengeDocument);
   }
 
-  async saveChallenge(challenge: Challenge) {
+  async save(challenge: Challenge) {
     const challengeDoc = await this.challengeDoc.findOneAndUpdate(
       { _id: challenge.id },
       {
