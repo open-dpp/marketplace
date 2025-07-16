@@ -72,6 +72,8 @@ jobs:
           DB_DATABASE: management
           DB_HOST: localhost
           DB_PORT: 27017
+          ISSUER_DID: did:key:z6Mkrh8ezBnQcZWXnDskt8oPHb4kGvSENgHwy8k7Vr857FqU
+          ISSUER_PRIVATE_KEY_HEX: 91197b99d87780d62dd15e12b573b2f979049c0e3e47aaf51eaadecf16779a86b5da04d31b3c8763e23397721e38796e20f7057e668418b23880d61f426ce3c3
         run: npm test
 
   build-publish-docker-image:
