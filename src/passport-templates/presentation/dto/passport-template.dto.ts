@@ -19,8 +19,8 @@ export type PassportTemplateCreateDto = z.infer<
 export const PassportTemplateSchema = PassportTemplateCreateSchema.extend({
   id: z.string(),
   vcDid: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 });
 
 export type PassportTemplateDto = z.infer<typeof PassportTemplateSchema>;
@@ -39,7 +39,7 @@ export function passportTemplateToDto(
     contactEmail: passportTemplate.contactEmail,
     organizationName: passportTemplate.organizationName,
     templateData: passportTemplate.templateData,
-    createdAt: passportTemplate.createdAt,
-    updatedAt: passportTemplate.updatedAt,
+    createdAt: passportTemplate.createdAt.toISOString(),
+    updatedAt: passportTemplate.updatedAt.toISOString(),
   });
 }

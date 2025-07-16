@@ -60,6 +60,21 @@ describe('PassportTemplateService', () => {
     expect(found).toEqual(passportTemplate);
   });
 
+  it('should find all passport templates', async () => {
+    const passportTemplate = PassportTemplate.loadFromDb(
+      passportTemplatePropsFactory.build(),
+    );
+    const passportTemplate2 = PassportTemplate.loadFromDb(
+      passportTemplatePropsFactory.build({ id: randomUUID() }),
+    );
+
+    await service.save(passportTemplate);
+    await service.save(passportTemplate2);
+    const found = await service.findAll();
+    expect(found).toContainEqual(passportTemplate);
+    expect(found).toContainEqual(passportTemplate2);
+  });
+
   afterAll(async () => {
     await mongoConnection.close();
     await module.close();

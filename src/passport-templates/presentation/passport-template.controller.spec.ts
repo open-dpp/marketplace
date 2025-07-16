@@ -10,13 +10,17 @@ import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import { VerifiableCredentialsGuard } from '../../auth/verifiable-credentials/verifiable-credentials.guard';
 import { getVcTokenFromConfigService } from '../../../test/auth-token-helper.testing';
 import { ConfigService } from '@nestjs/config';
-import { passportRequestFactory } from '../fixtures/passport-template-props.factory';
+import {
+  passportRequestFactory,
+  passportTemplatePropsFactory,
+} from '../fixtures/passport-template-props.factory';
 import { PassportTemplateService } from '../infrastructure/passport-template.service';
 import {
   PassportTemplateDoc,
   PassportTemplateDbSchema,
 } from '../infrastructure/passport-template.schema';
 import { PassportTemplate } from '../domain/passport-template';
+import { passportTemplateToDto } from './dto/passport-template.dto';
 
 describe('PassportTemplateController', () => {
   let app: INestApplication;
@@ -83,6 +87,40 @@ describe('PassportTemplateController', () => {
         updatedAt: mockNow,
         id: response.body.id,
       }),
+    );
+  });
+
+  it(`/GET find passport template`, async () => {
+    const passportTemplate = PassportTemplate.loadFromDb(
+      passportTemplatePropsFactory.build(),
+    );
+    await passportTemplateService.save(passportTemplate);
+    const response = await request(app.getHttpServer()).get(
+      `/templates/passports/${passportTemplate.id}`,
+    );
+    expect(response.status).toEqual(200);
+    expect(response.body).toEqual(passportTemplateToDto(passportTemplate));
+  });
+
+  it(`/GET find all passport templates`, async () => {
+    const passportTemplate = PassportTemplate.loadFromDb(
+      passportTemplatePropsFactory.build(),
+    );
+    const passportTemplate2 = PassportTemplate.loadFromDb(
+      passportTemplatePropsFactory.build({ id: randomUUID() }),
+    );
+
+    await passportTemplateService.save(passportTemplate);
+    await passportTemplateService.save(passportTemplate2);
+    const response = await request(app.getHttpServer()).get(
+      `/templates/passports`,
+    );
+    expect(response.status).toEqual(200);
+    expect(response.body).toContainEqual(
+      passportTemplateToDto(passportTemplate),
+    );
+    expect(response.body).toContainEqual(
+      passportTemplateToDto(passportTemplate2),
     );
   });
 

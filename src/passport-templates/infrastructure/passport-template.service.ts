@@ -65,4 +65,11 @@ export class PassportTemplateService {
     }
     return this.convertToDomain(passportTemplateDocument);
   }
+
+  async findAll() {
+    const passportTemplateDocuments = await this.passportTemplateDoc.find();
+    return passportTemplateDocuments.map((passportTemplateDocument) =>
+      this.convertToDomain(passportTemplateDocument),
+    );
+  }
 }
