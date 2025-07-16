@@ -86,7 +86,7 @@ export async function issueVc(
   did: string,
   privateKey: string,
   issuerDid: string,
-) {
+): Promise<string> {
   const privateKeyBytes = hexToEd25519PrivateKey(privateKey);
 
   const vcPayload = {

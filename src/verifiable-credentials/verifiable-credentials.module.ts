@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { ChallengeController } from './presentation/challange-controller';
+import { ChallengeController } from './presentation/verifiable-credentials.controller';
 import { ChallengeService } from './infrastructure/challenge-service';
 import { MongooseModule } from '@nestjs/mongoose';
 import {

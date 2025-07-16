@@ -11,7 +11,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { createResolver, issueVc } from '../../auth/utils';
 
-@Controller('auth')
+@Controller('verifiable-credentials')
 export class ChallengeController {
   private readonly issuerDid: string;
   private readonly privateKey: string;
@@ -24,14 +24,14 @@ export class ChallengeController {
   }
 
   @Public()
-  @Post('challenge-request')
+  @Post('challenge')
   async requestChallenge(@Body() body: { did: string }) {
     const challenge = Challenge.create({ id: body.did });
     return challengeToDto(await this.challengeService.save(challenge));
   }
 
   @Public()
-  @Post('verify-challenge')
+  @Post('issue')
   async verify(
     @Body() body: { did: string; challenge: string; signatureJwt: string },
   ) {
@@ -52,6 +52,7 @@ export class ChallengeController {
     }
 
     await this.challengeService.delete(did);
-    return await issueVc(did, this.privateKey, this.issuerDid); //
+    const jwt = await issueVc(did, this.privateKey, this.issuerDid);
+    return { jwt };
   }
 }
