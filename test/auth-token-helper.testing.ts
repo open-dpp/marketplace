@@ -6,11 +6,12 @@ const getKeycloakAuthToken = (
   userId: string,
   organizationIds: string[],
   keycloakAuthTestingGuard: KeycloakAuthTestingGuard,
+  userEmail?: string,
 ) => {
   const organizationsString = `[${organizationIds.map((id) => id).join(',')}]`;
   const token = Buffer.from(organizationsString).toString('base64');
   const name = randomUUID();
-  const email = `${name}@example.com`;
+  const email = userEmail ?? `${name}@example.com`;
   const keycloakUser: KeycloakUserInToken = {
     sub: userId,
     email,

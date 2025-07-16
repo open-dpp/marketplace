@@ -75,6 +75,7 @@ describe('PassportTemplateController', () => {
 
   it(`/POST passport template`, async () => {
     const passportTemplate = passportRequestFactory.build();
+    const userEmail = 'user@example.com';
     const response = await request(app.getHttpServer())
       .post(`/organizations/${organizationId}/templates/passports`)
       .set(
@@ -83,6 +84,7 @@ describe('PassportTemplateController', () => {
           userId,
           [organizationId],
           keycloakAuthTestingGuard,
+          userEmail,
         ),
       )
       .send(passportTemplate);
@@ -92,6 +94,7 @@ describe('PassportTemplateController', () => {
     expect(found).toEqual(
       PassportTemplate.loadFromDb({
         ...passportTemplate,
+        contactEmail: userEmail,
         ownedByOrganizationId: organizationId,
         createdByUserId: userId,
         isOfficial: false,

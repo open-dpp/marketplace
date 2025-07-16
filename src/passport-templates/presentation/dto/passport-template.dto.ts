@@ -7,7 +7,6 @@ export const PassportTemplateCreateSchema = z.object({
   description: z.string(),
   sectors: z.enum(Sector).array(),
   website: z.string().optional().default(null),
-  contactEmail: z.string(),
   organizationName: z.string(),
   templateData: z.record(z.string(), z.unknown()),
 });

@@ -33,6 +33,7 @@ export class PassportTemplateController {
     const passportTemplate = await this.passportTemplateService.save(
       PassportTemplate.create({
         ...passportTemplateDto,
+        contactEmail: req.authContext.keycloakUser.email,
         isOfficial: false,
         ownedByOrganizationId: organizationId,
         createdByUserId: req.authContext.keycloakUser.sub,

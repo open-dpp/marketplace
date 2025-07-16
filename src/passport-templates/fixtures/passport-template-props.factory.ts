@@ -14,7 +14,6 @@ export const passportRequestFactory = Factory.define<PassportTemplateCreateDto>(
       isOfficial: true,
       sectors: [Sector.BATTERY],
       website: 'https://open-dpp.de',
-      contactEmail: 'test@example.com',
       organizationName: 'open-dpp',
       templateData: {
         id: randomUUID(),
