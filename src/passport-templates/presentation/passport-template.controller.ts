@@ -1,20 +1,12 @@
-import { Controller, Get, Param, Request } from '@nestjs/common';
+import { Controller, Get, Request } from '@nestjs/common';
 import { AuthRequest } from '../../auth/auth-request';
-import { PermissionsService } from '../../permissions/permissions.service';
 
-@Controller('organizations/:orgaId/templates/passports')
+@Controller('templates/passports')
 export class PassportTemplateController {
-  constructor(private permissionsService: PermissionsService) {}
+  constructor() {}
 
   @Get()
-  async getTemplates(
-    @Param('orgaId') organizationId: string,
-    @Request() req: AuthRequest,
-  ) {
-    await this.permissionsService.canAccessOrganizationOrFail(
-      organizationId,
-      req.authContext,
-    );
-    return { hello: 'world' };
+  async getTemplates(@Request() req: AuthRequest) {
+    return { hello: req.authContext.verifiableCredential.sub };
   }
 }

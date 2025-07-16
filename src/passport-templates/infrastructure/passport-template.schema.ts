@@ -43,3 +43,5 @@ export class PassportTemplateDoc extends Document {
 }
 export const PassportTemplateSchema =
   SchemaFactory.createForClass(PassportTemplateDoc);
+
+PassportTemplateSchema.index({ organizationName: 1, sectors: 1 });

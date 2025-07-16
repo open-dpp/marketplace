@@ -1,68 +1,48 @@
 import { INestApplication } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Test, TestingModule } from '@nestjs/testing';
-import { KeycloakAuthTestingGuard } from '../../../test/keycloak-auth.guard.testing';
 import { MongooseTestingModule } from '../../../test/mongo.testing.module';
-import { PermissionsModule } from '../../permissions/permissions.module';
 import { APP_GUARD } from '@nestjs/core';
-import getKeycloakAuthToken from '../../../test/auth-token-helper.testing';
 import * as request from 'supertest';
 import { PassportTemplateModule } from '../passport-template.module';
 import { Connection } from 'mongoose';
 import { getConnectionToken } from '@nestjs/mongoose';
+import { VerifiableCredentialsGuard } from '../../auth/verifiable-credentials/verifiable-credentials.guard';
+import { getVcTokenFromConfigService } from '../../../test/auth-token-helper.testing';
+import { ConfigService } from '@nestjs/config';
 
 describe('PassportTemplateController', () => {
   let app: INestApplication;
-  const keycloakAuthTestingGuard = new KeycloakAuthTestingGuard(new Map());
   let mongoConnection: Connection;
-
-  const userId = randomUUID();
-  const organizationId = randomUUID();
   let module: TestingModule;
+  let configService: ConfigService;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        MongooseTestingModule,
-        PermissionsModule,
-        PassportTemplateModule,
-      ],
+      imports: [MongooseTestingModule, PassportTemplateModule],
       providers: [
         {
           provide: APP_GUARD,
-          useValue: keycloakAuthTestingGuard,
+          useClass: VerifiableCredentialsGuard, // Changed from useValue to useClass
         },
       ],
     }).compile();
 
     app = module.createNestApplication();
     mongoConnection = module.get(getConnectionToken());
+    configService = module.get(ConfigService);
 
     await app.init();
   });
 
   it(`/GET passport template`, async () => {
+    const did = randomUUID();
+    const vcToken = await getVcTokenFromConfigService(did, configService);
     const response = await request(app.getHttpServer())
-      .get(`/organizations/${organizationId}/templates/passports`)
-      .set(
-        'Authorization',
-        getKeycloakAuthToken(
-          userId,
-          [organizationId],
-          keycloakAuthTestingGuard,
-        ),
-      );
+      .get(`/templates/passports`)
+      .set('Authorization', vcToken);
     expect(response.status).toEqual(200);
-  });
-
-  it(`/GET passport template fails if user is not a member of organization`, async () => {
-    const response = await request(app.getHttpServer())
-      .get(`/organizations/${organizationId}/templates/passports`)
-      .set(
-        'Authorization',
-        getKeycloakAuthToken(userId, [randomUUID()], keycloakAuthTestingGuard),
-      );
-    expect(response.status).toEqual(403);
+    expect(response.body).toEqual({ hello: did });
   });
 
   afterAll(async () => {
