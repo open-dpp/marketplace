@@ -22,7 +22,7 @@ export class PassportTemplateService {
       description: passportTemplateDoc.description,
       isOfficial: passportTemplateDoc.isOfficial,
       sectors: passportTemplateDoc.sectors,
-      website: passportTemplateDoc.website,
+      website: passportTemplateDoc.website ?? null,
       contactEmail: passportTemplateDoc.contactEmail,
       organizationName: passportTemplateDoc.organizationName,
       templateData: passportTemplateDoc.templateData,

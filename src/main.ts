@@ -6,9 +6,11 @@ import {
   NotFoundInDatabaseExceptionFilter,
   ValueErrorFilter,
 } from './exceptions/exception.handler';
+import { ConfigService } from '@nestjs/config';
 
 export async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
 
   app.useGlobalFilters(
     new NotFoundInDatabaseExceptionFilter(),
@@ -18,8 +20,8 @@ export async function bootstrap() {
   app.enableCors({
     origin: '*',
   });
-
-  await app.listen(3000, '0.0.0.0');
+  const port = Number(configService.get('PORT', '3000'));
+  await app.listen(port, '0.0.0.0');
 }
 
 if (require.main === module) {
