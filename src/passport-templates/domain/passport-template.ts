@@ -3,6 +3,17 @@ import { randomUUID } from 'crypto';
 export enum Sector {
   BATTERY = 'Battery',
   TEXTILE = 'Textile',
+  ELECTRONICS = 'Electronics',
+  MACHINERY = 'Machinery',
+  AEROSPACE = 'Aerospace',
+  CONSTRUCTION = 'Construction',
+  MEDICAL = 'Medical',
+  HEALTHCARE = 'Healthcare',
+  EDUCATION = 'Education',
+  TRADE = 'Trade',
+  AGRICULTURE = 'Agriculture',
+  MINING = 'Mining',
+  OTHER = 'Other',
 }
 
 type JsonObject = Record<string, unknown>;
