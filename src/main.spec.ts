@@ -25,7 +25,7 @@ describe('Bootstrap', () => {
     jest.clearAllMocks();
 
     const configServiceMock = {
-      get: jest.fn().mockReturnValue(3001),
+      get: jest.fn().mockReturnValue('3001'),
     };
     // Setup mock app
     mockApp = {
