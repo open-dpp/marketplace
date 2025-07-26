@@ -40,7 +40,7 @@ export function passportTemplateToDto(
     contactEmail: passportTemplate.contactEmail,
     organizationName: passportTemplate.organizationName,
     templateData: passportTemplate.templateData,
-    createdAt: passportTemplate.createdAt.toISOString(),
-    updatedAt: passportTemplate.updatedAt.toISOString(),
+    createdAt: passportTemplate.createdAt ? passportTemplate.createdAt.toISOString() : null,
+    updatedAt: passportTemplate.updatedAt ? passportTemplate.updatedAt.toISOString() : null,
   });
 }
