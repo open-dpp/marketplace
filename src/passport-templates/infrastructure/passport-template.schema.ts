@@ -26,7 +26,7 @@ export class PassportTemplateDoc extends Document {
   isOfficial: boolean;
   @Prop({ required: true, type: [String], enum: Sector })
   sectors: Sector[];
-  @Prop({ required: false })
+  @Prop({ required: false, default: null })
   website: string;
   @Prop({ required: true })
   contactEmail: string;
