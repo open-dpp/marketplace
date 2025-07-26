@@ -56,6 +56,7 @@ export class PassportTemplate {
   ) {}
 
   static create(data: PassportTemplateCreationProps): PassportTemplate {
+    const now = new Date(Date.now());
     return new PassportTemplate(
       randomUUID(),
       data.ownedByOrganizationId,
@@ -69,7 +70,8 @@ export class PassportTemplate {
       data.contactEmail,
       data.organizationName,
       data.templateData,
-      new Date(Date.now()),
+      now,
+      now,
     );
   }
 
