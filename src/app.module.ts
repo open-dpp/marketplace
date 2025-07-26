@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { KeycloakAuthGuard } from './auth/keycloak-auth/keycloak-auth.guard';
 import { generateMongoConfig } from './database/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HttpModule } from '@nestjs/axios';
 import { AuthModule } from './auth/auth.module';
-import { PermissionsModule } from './permissions/permissions.module';
 import { PassportTemplateModule } from './passport-templates/passport-template.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { KeycloakAuthGuard } from './auth/keycloak-auth/keycloak-auth.guard';
 
 @Module({
   imports: [
@@ -23,8 +23,8 @@ import { PassportTemplateModule } from './passport-templates/passport-template.m
     }),
     HttpModule,
     AuthModule,
-    PermissionsModule,
     PassportTemplateModule,
+    PermissionsModule,
   ],
   providers: [
     {

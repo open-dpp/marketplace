@@ -25,7 +25,7 @@ describe('Bootstrap', () => {
     jest.clearAllMocks();
 
     const configServiceMock = {
-      get: jest.fn().mockReturnValue('false'),
+      get: jest.fn().mockReturnValue('3001'),
     };
     // Setup mock app
     mockApp = {
@@ -60,6 +60,6 @@ describe('Bootstrap', () => {
       origin: '*',
     });
 
-    expect(mockApp.listen).toHaveBeenCalledWith(3000, '0.0.0.0');
+    expect(mockApp.listen).toHaveBeenCalledWith(3001, '0.0.0.0');
   });
 });
