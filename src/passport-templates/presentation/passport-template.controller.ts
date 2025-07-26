@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Request, NotFoundException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  NotFoundException,
+} from '@nestjs/common';
 import { AuthRequest } from '../../auth/auth-request';
 import { PassportTemplateService } from '../infrastructure/passport-template.service';
 import {
@@ -52,7 +60,9 @@ export class PassportTemplateController {
       );
     } catch (error) {
       if (error instanceof NotFoundInDatabaseException) {
-        throw new NotFoundException(`Passport template with id ${id} could not be found.`);
+        throw new NotFoundException(
+          `Passport template with id ${id} could not be found.`,
+        );
       }
       throw error;
     }
