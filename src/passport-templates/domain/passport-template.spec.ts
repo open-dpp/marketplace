@@ -20,6 +20,8 @@ describe('PassportTemplate', () => {
       props.ownedByOrganizationId,
     );
     expect(passportTemplate.createdByUserId).toEqual(props.createdByUserId);
+    expect(passportTemplate.createdAt).toBeDefined();
+    expect(passportTemplate.createdAt).toBeInstanceOf(Date);
   });
   it('is loaded from database', () => {
     const props = passportTemplatePropsFactory.build();
