@@ -18,6 +18,7 @@ const getKeycloakAuthToken = (
     name: `Test User ${name}`,
     preferred_username: `Test User ${name}`,
     email_verified: true,
+    memberships: [],
   };
   keycloakAuthTestingGuard.tokenToUserMap.set(token, keycloakUser);
   return `Bearer ${token}`;
