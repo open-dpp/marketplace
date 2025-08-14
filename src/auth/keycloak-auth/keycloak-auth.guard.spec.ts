@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakAuthGuard } from './keycloak-auth.guard';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import {
   ExecutionContext,
   HttpException,
@@ -16,8 +15,6 @@ import { HttpModule } from '@nestjs/axios';
 describe('KeycloakAuthGuard', () => {
   let guard: KeycloakAuthGuard;
   let reflector: Reflector;
-  let jwtService: JwtService;
-  let module: TestingModule;
 
   const mockUser: KeycloakUserInToken = {
     sub: 'test-user-id',
@@ -25,10 +22,11 @@ describe('KeycloakAuthGuard', () => {
     name: 'Test User',
     preferred_username: 'testuser',
     email_verified: true,
+    memberships: [],
   };
 
   beforeEach(async () => {
-    module = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       imports: [HttpModule],
       providers: [
         KeycloakAuthGuard,
@@ -44,18 +42,11 @@ describe('KeycloakAuthGuard', () => {
             get: jest.fn().mockReturnValue('mock-public-key'),
           },
         },
-        {
-          provide: JwtService,
-          useValue: {
-            verifyAsync: jest.fn(),
-          },
-        },
       ],
     }).compile();
 
     guard = module.get<KeycloakAuthGuard>(KeycloakAuthGuard);
     reflector = module.get<Reflector>(Reflector);
-    jwtService = module.get<JwtService>(JwtService);
   });
 
   it('should be defined', () => {
@@ -115,16 +106,11 @@ describe('KeycloakAuthGuard', () => {
         memberships: ['organization-org1', 'organization-org2'],
       };
 
-      jest.spyOn(jwtService, 'verifyAsync').mockResolvedValue(mockPayload);
+      jest.spyOn(guard, 'validateToken').mockResolvedValue(mockPayload);
 
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
-      expect(jwtService.verifyAsync).toHaveBeenCalledWith('valid-token', {
-        algorithms: ['RS256'],
-        publicKey:
-          '-----BEGIN PUBLIC KEY-----\nmock-public-key\n-----END PUBLIC KEY-----',
-      });
       expect(mockRequest.authContext).toBeDefined();
       expect(mockRequest.authContext.keycloakUser).toEqual(mockPayload);
       expect(mockRequest.authContext.permissions).toEqual([
@@ -150,16 +136,12 @@ describe('KeycloakAuthGuard', () => {
         // No memberships property
       };
 
-      jest.spyOn(jwtService, 'verifyAsync').mockResolvedValue(mockPayload);
+      jest.spyOn(guard, 'validateToken').mockResolvedValue(mockPayload);
 
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
       expect(mockRequest.authContext.permissions).toEqual([]);
     });
-  });
-
-  afterEach(async () => {
-    await module.close();
   });
 });

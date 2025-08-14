@@ -24,6 +24,7 @@ describe('PermissionsService', () => {
       name: 'Test User',
       preferred_username: 'testuser',
       email_verified: true,
+      memberships: [],
     };
 
     module = await Test.createTestingModule({
